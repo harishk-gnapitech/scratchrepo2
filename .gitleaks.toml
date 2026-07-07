@@ -1,0 +1,12 @@
+# Gitleaks config - extends the default ruleset.
+# Add allowlist entries here for known false positives (test fixtures, etc.)
+title = "gitleaks-config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Global allowlist"
+paths = [
+  '''\.gitleaks\.toml''',
+]
