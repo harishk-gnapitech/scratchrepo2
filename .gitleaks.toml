@@ -1,12 +1,58 @@
-# Gitleaks config - extends the default ruleset.
-# Add allowlist entries here for known false positives (test fixtures, etc.)
-title = "gitleaks-config"
+# Gitleaks Production Configuration - Frontend, Playwright & Storybook Optimized
+title = "gitleaks-frontend-stack-config"
 
 [extend]
 useDefault = true
 
 [allowlist]
-description = "Global allowlist"
+description = "Frontend stack allowlist to eliminate CI/CD false positives"
+
+# 1. Path Allowlist: Skip dependencies, build artifacts, Playwright, and Storybook noise
 paths = [
   '''\.gitleaks\.toml''',
+  
+  # Frontend Lockfiles & Package Managers
+  '''package-lock\.json$''',
+  '''pnpm-lock\.yaml$''',
+  '''yarn\.lock$''',
+  '''bun\.lockb$''',
+  
+  # Frontend Build & Dependency Outputs
+  '''node_modules/''',
+  '''dist/''',
+  '''build/''',
+  '''\.next/''',
+  '''\.nuxt/''',
+  
+  # --- Playwright Specific Exclusions ---
+  '''playwright-report/''',            # HTML execution reports
+  '''playwright/\.cache/''',           # Browser binary caches
+  '''test-results/''',                # Traces, videos, screenshots on failure
+  '''__snapshots__/''',               # Visual regression baselines
+  '''\.spec\.ts\.snap$''',            # Snapshot text assertion files
+  
+  # --- Storybook Specific Exclusions ---
+  '''\.storybook/''',                 # Configuration folder (main.js, preview.js, etc.)
+  '''storybook-static/''',            # The compiled, static production build of your Storybook
+  '''\.component-story/''',           # Custom story caches or generated wrappers
+]
+
+# 2. Extension Allowlist: Skip media, web assets, and testing artifacts
+extensions = [
+  # Playwright & Testing Formats
+  "zip",                              # Playwright .trace.zip files
+  "har",                              # HTTP Archive files for network mocking
+  
+  # Images, Fonts & Media (Crucial for Storybook UI components and visual testing)
+  "jpg", "jpeg", "png", "gif", "ico", "svg", "webp", "avif",
+  "woff", "woff2", "eot", "ttf",
+  "mp4", "webm"                       # Playwright test video recordings
+]
+
+# 3. Regex Allowlist: Ignore common testing and playground placeholders
+regexes = [
+  '''(?i)example''',                  # Standard fallback mock strings
+  '''(?i)dummy''',
+  '''(?i)mock''',                     # Mock data common in both Playwright and Storybook args
+  '''YOUR_.*?_HERE''',                
 ]

@@ -1,4 +1,4 @@
-name: Frontend CI
+name: Frontend Security CI 
 on:
   push:
     branches: [dev, main]
@@ -37,8 +37,11 @@ jobs:
           fetch-depth: 0
       - name: Run Gitleaks
         uses: gitleaks/gitleaks-action@v3
-
-  
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          config-path: gitleaks.toml
+ 
   license-collection:
     name: Collect dependency licenses
     runs-on: ubuntu-latest
