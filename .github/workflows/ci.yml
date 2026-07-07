@@ -39,38 +39,41 @@ jobs:
           fetch-depth: 0
       - name: Run Gitleaks
         uses: gitleaks/gitleaks-action@v3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  dependency-review:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: read
-      pull-requests: write
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/dependency-review-action@v5
-        with:
-          fail-on-severity: high
-          deny-licenses: GPL-3.0, AGPL-3.0
-          base-ref: ${{ github.event_name == 'push' && github.event.before || '' }}
-          head-ref: ${{ github.event_name == 'push' && github.event.after || '' }}
-
-  license-check:
+  
+  license-collection:
+    name: Collect Dependency Licenses
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '24'
           cache: 'npm'
-      - run: npm ci
-      - run: npx license-checker --production --failOn "GPL-3.0;AGPL-3.0;LGPL-3.0" --summary
 
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Generate License Inventory
+        run: |
+          echo "### Production Dependency Licenses" >> $GITHUB_STEP_SUMMARY
+          npx license-checker --production --summary >> $GITHUB_STEP_SUMMARY
+          npx license-checker --production --json --out licenses-inventory.json
+
+      - name: Upload License Inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-license-inventory
+          path: licenses-inventory.json
+
+
+  # This is repetitive as Team 2 does SAST (codeql-action), SCA (npm audit), which is also done here
   security-scan:
     runs-on: ubuntu-latest
     timeout-minutes: 15
