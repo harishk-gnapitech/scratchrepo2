@@ -14,6 +14,7 @@ permissions:
 
 jobs:
   lint:
+    name: Linting 
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -28,6 +29,7 @@ jobs:
       - run: npm run lint
 
   secret-scan:
+    name: Scanning for accidental secret leaks
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -98,6 +100,7 @@ jobs:
       - uses: github/codeql-action/analyze@v4
 
   build:
+    name: Build
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
