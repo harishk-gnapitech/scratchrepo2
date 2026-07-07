@@ -121,6 +121,7 @@ jobs:
           retention-days: 7
 
   accessibility-audit:
+    name: Accessibility audit
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -141,6 +142,7 @@ jobs:
       - run: npx pa11y-ci --sitemap http://localhost:5000/sitemap.xml --config .pa11yci.json
 
   performance-audit:
+    name: Performance audit
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 15
