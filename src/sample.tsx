@@ -4,5 +4,5 @@ export default function App(){
     const [count, setCount] = useState(0);
     console.log(count);
     setCount((c)=>c+2);
-    console.log("Hello World");
+    console.log("Hello World 2");
 }
